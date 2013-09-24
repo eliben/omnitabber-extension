@@ -3,7 +3,8 @@
   "description" : "Quick and intelligent tab switching from the omnibar",
   "version": "1.1",
   "background": {
-    "scripts": ["omnitabber.js"]
+    "scripts": ["omnitabber.js"],
+    "persistent": false
   },
   "permissions": ["tabs"],
   "omnibox": {
