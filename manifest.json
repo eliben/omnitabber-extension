@@ -1,0 +1,14 @@
+{
+  "name": "OmniTabber",
+  "description" : "Quick and intelligent tab switching from the omnibar",
+  "version": "1.1",
+  "background": {
+    "scripts": ["omnitabber.js"]
+  },
+  "permissions": ["tabs"],
+  "omnibox": {
+    "keyword" : "q"
+  },
+  "manifest_version": 2
+}
+
