@@ -22,5 +22,6 @@ broken by whitespace) in the list of options. If the word matches one of the
 options exactly, it gets priority. If the word is a prefix, it gets priority
 too. Words that are just substrings get last priority. 
 
-We can use the same approach, and bump scoring for prefixes.
+We can use the same approach, and bump scoring for prefixes. It's important (I
+don't think switch-to-tab does it currently).
 

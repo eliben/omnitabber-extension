@@ -126,29 +126,30 @@ chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
 // The user has accepted what is typed into the omnibox.
 // text: the suggested text selected by the user
 chrome.omnibox.onInputEntered.addListener(function(text) {
-  // Extract the tab id encoded in the text
+  // Extract the tab id encoded in the text. If there's none, maybe the user
+  // didn't select any suggestion. In this case, try to see if there's a top
+  // matching id available.
   var tab_id = text.match(/##(\d+)$/);
-  if (tab_id)
+  if (tab_id) {
     tab_id = parseInt(tab_id[1]);
-  else if (top_match_id != -1)
+  } else if (top_match_id != -1) {
     tab_id = top_match_id;
-  else
+  } else {
     return;
+  }
 
+  // Get hold of the tab with the selected id.
   chrome.tabs.get(tab_id, function(tab) {
-    if (tab && !tab.selected) {
-      chrome.tabs.update(tab_id, {
-        selected: true
+    if (tab) {
+      // Switch to the tab by selecting it and focusing its containing window.
+      chrome.tabs.update(tab_id, {selected: true});
+
+      chrome.windows.get(tab.windowId, function(win) {
+        if (!win.focused) {
+          chrome.windows.update(tab.windowId, {focused: true});
+        }
       });
     }
-
-    chrome.windows.get(tab.windowId, function(win) {
-      if (!window.focused) {
-        chrome.windows.update(tab.windowId, {
-          focused: true
-        });
-      }
-    });
   });
 });
 
