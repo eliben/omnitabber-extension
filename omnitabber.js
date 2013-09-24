@@ -1,6 +1,5 @@
 'use strict';
 
-var omnibox = chrome.omnibox;
 var topMatch;
 
 function escape(text) {
@@ -84,7 +83,7 @@ function formatMatches(parsed) {
   }, "");
 }
 
-omnibox.onInputChanged.addListener(function(text, suggest) {
+chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
   text = text.toLowerCase().replace(/\W+/g, ' ').trim();
   if (!text)
     return;
@@ -122,7 +121,7 @@ omnibox.onInputChanged.addListener(function(text, suggest) {
   });
 });
 
-omnibox.onInputEntered.addListener(function(url) {
+chrome.omnibox.onInputEntered.addListener(function(url) {
   var tabId = url.match(/#(\d+)$/);
   if (tabId)
     tabId = parseInt(tabId[1]);
@@ -155,7 +154,7 @@ omnibox.onInputEntered.addListener(function(url) {
   });
 });
 
-omnibox.onInputCancelled.addListener(function() {
+chrome.omnibox.onInputCancelled.addListener(function() {
   topMatch = -1;
 });
 

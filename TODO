@@ -1,0 +1,7 @@
+* Why is escape needed? Is it doing the right escaping?
+* Do dmenu-like matching instead of regexes.
+  * Another potential improvement: match scoring - to show the best on top?
+  * If matching is inefficient, maybe it's enough to precompute matches once,
+    when the omnibox loads?
+* Unit testing: need a way to mock the chrome interfaces?
+
