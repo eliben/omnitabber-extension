@@ -8,6 +8,10 @@ Matching algorithm
 Have to match both title and URL. Title gets higher score? It's important to
 float the actually better suggestions to the top.
 
+It even makes sense to add fuzzy-matching, with lower scores. This should take
+care of spelling errors, shortcuts, etc. Something like
+http://ginstrom.com/scribbles/2007/12/01/fuzzy-substring-matching-with-levenshtein-distance-in-python/
+
 Here's a survey of existing techniques to do the same thing.
 
 dmenu

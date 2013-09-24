@@ -1,6 +1,6 @@
 'use strict';
 
-var topMatch;
+var top_match_id;
 
 function escape(text) {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -91,7 +91,7 @@ chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
   // Run a callback on all open windows. populate: true to include the .tabs
   // property with each window.
   chrome.windows.getAll({populate: true}, function(windows) {
-    topMatch = -1;
+    top_match_id = -1;
 
     var tabs = windows.reduce(function(arr, win) {
       return arr.concat(win.tabs);
@@ -105,15 +105,15 @@ chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
       };
     }).filter(function(item) {
       if (item.title.length > 1 || item.url.length > 1) {
-        if (topMatch == -1)
-          topMatch = item.tab.id;
+        if (top_match_id == -1)
+          top_match_id = item.tab.id;
         return true;
       } else {
         return false;
       }
     }).map(function(item) {
       return {
-        content: item.tab.title + ' - ' + item.tab.url + '#' + item.tab.id,
+        content: item.tab.title + ' - ' + item.tab.url + '##' + item.tab.id,
         description: formatMatches(item.title) + ' - ' +
                      '<url>' + formatMatches(item.url) + '</url>'
       };
@@ -123,25 +123,21 @@ chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
   });
 });
 
-chrome.omnibox.onInputEntered.addListener(function(url) {
-  var tabId = url.match(/#(\d+)$/);
-  if (tabId)
-    tabId = parseInt(tabId[1]);
-  else if (topMatch != -1)
-    tabId = topMatch;
+// The user has accepted what is typed into the omnibox.
+// text: the suggested text selected by the user
+chrome.omnibox.onInputEntered.addListener(function(text) {
+  // Extract the tab id encoded in the text
+  var tab_id = text.match(/##(\d+)$/);
+  if (tab_id)
+    tab_id = parseInt(tab_id[1]);
+  else if (top_match_id != -1)
+    tab_id = top_match_id;
   else
     return;
 
-  chrome.tabs.getSelected(null, function(selected) {
-    // if the selected tab was the new tab page,
-    // assume that it was blank, and close it!
-    if (selected.url == 'chrome://newtab/')
-      chrome.tabs.remove(selected.id);
-  });
-
-  chrome.tabs.get(tabId, function(tab) {
+  chrome.tabs.get(tab_id, function(tab) {
     if (tab && !tab.selected) {
-      chrome.tabs.update(tabId, {
+      chrome.tabs.update(tab_id, {
         selected: true
       });
     }
@@ -156,7 +152,8 @@ chrome.omnibox.onInputEntered.addListener(function(url) {
   });
 });
 
-chrome.omnibox.onInputCancelled.addListener(function() {
-  topMatch = -1;
+chrome.omnibox.onInputStarted.addListener(function() {
+  // Reset the top match id every time a new Omnitabber session starts.
+  top_match_id = -1;
 });
 
