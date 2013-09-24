@@ -88,6 +88,8 @@ chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
   if (!text)
     return;
 
+  // Run a callback on all open windows. populate: true to include the .tabs
+  // property with each window.
   chrome.windows.getAll({populate: true}, function(windows) {
     topMatch = -1;
 

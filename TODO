@@ -1,7 +1,22 @@
 * Why is escape needed? Is it doing the right escaping?
-* Do dmenu-like matching instead of regexes.
-  * Another potential improvement: match scoring - to show the best on top?
-  * If matching is inefficient, maybe it's enough to precompute matches once,
-    when the omnibox loads?
 * Unit testing: need a way to mock the chrome interfaces?
+* The newtab logic - do we need it? I think not.
+
+Matching algorithm
+==================
+
+Have to match both title and URL. Title gets higher score? It's important to
+float the actually better suggestions to the top.
+
+Here's a survey of existing techniques to do the same thing.
+
+dmenu
+-----
+
+Dmenu has a simple heuristic: it looks for the word (each word in the input,
+broken by whitespace) in the list of options. If the word matches one of the
+options exactly, it gets priority. If the word is a prefix, it gets priority
+too. Words that are just substrings get last priority. 
+
+We can use the same approach, and bump scoring for prefixes.
 
