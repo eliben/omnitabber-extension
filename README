@@ -1,5 +1,25 @@
-omnitabber-extension
-====================
-
 Omnitabber Chrome extension
+===========================
+
+Omnitabber Chrome extension. **Pre-alpha**.
+
+Scoring algorithm
+-----------------
+
+* The search string is converted to lowercase, all non-alphanumeric characters
+  are converted to spaces. It is then split by whitespace into an array of
+  search words.
+* The tab's title and URL are considered. Both are converted to lowercase and
+  stripped from all non-alphanumeric characters.
+* Each word is matched vs. the title first, and if not found there, vs. the URL.
+  If not found in either, score=0.
+* If one of the search words is scored=0, the whole match fails.
+* Basic scoring - 100 * word_length. I.e. in "foobar", "ooba" matches with
+  score=400.
+* From this, subtract the match's distance from the beginning of the
+  string. For example, in "foobar", "ooba" matches with score=399, while "obar"
+  matches with score=398.
+* Prefix-matches have a special bonus of 100. So "foob" matches with score=500.
+* The score of title matches is multiplied 2x. URL matches are not multiplied.
+
 

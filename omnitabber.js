@@ -10,12 +10,19 @@ var top_match_id;
 // a match. It's populated by onInputStarted.
 var active_tabs;
 
-
 // Compute the match score of the given chrome.Tab object for the given search
-// string. The search string may contain a number of whitespace-separated words.
+// words (array of strings).
 // Returns the object: {score, url_match_offsets, title_match_offsets}
-function compute_tab_match_score(tab, str) {
-  // TODO: lowercase url and title before matching
+//
+// See README for the scoring algorithm.
+function compute_tab_match_score(tab, searchwords) {
+  var title = tab.title.toLowerCase().replace(/\W+/g, '');
+  var url = tab.url.toLowerCase().replace(/\W+/g, '');
+
+  var score = 0;
+  for (var i = 0; i < searchwords.length; i++) {
+    // DO STUFF with word
+  };
 }
 
 function escape(text) {
