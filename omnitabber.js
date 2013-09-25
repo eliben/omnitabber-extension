@@ -90,17 +90,20 @@ function formatMatches(parsed) {
 }
 
 chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
+  // Replace runs of non-word chars with spaces
   text = text.toLowerCase().replace(/\W+/g, ' ').trim();
   if (!text)
     return;
 
   var suggestions = active_tabs.map(function(tab) {
+    // Attempt to produce suggestions for all tabs
     return {
       tab: tab,
       title: parseMatches(tab.title, text),
       url: parseMatches(tab.url, text)
     };
   }).filter(function(item) {
+    // Filter those with any matches
     if (item.title.length > 1 || item.url.length > 1) {
       if (top_match_id == -1)
         top_match_id = item.tab.id;
@@ -109,6 +112,8 @@ chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
       return false;
     }
   }).map(function(item) {
+    // Prepare suggestions by building objects expected by the 'suggest'
+    // callback.
     return {
       content: item.tab.title + ' - ' + item.tab.url + '##' + item.tab.id,
       description: formatMatches(item.title) + ' - ' +

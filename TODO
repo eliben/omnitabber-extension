@@ -8,6 +8,9 @@ Matching algorithm
 Have to match both title and URL. Title gets higher score? It's important to
 float the actually better suggestions to the top.
 
+Scoring for tabs in current window (vs. other windows) is also interesting.
+Scoring can be applied after the initial matches are found.
+
 It even makes sense to add fuzzy-matching, with lower scores. This should take
 care of spelling errors, shortcuts, etc. Something like
 http://ginstrom.com/scribbles/2007/12/01/fuzzy-substring-matching-with-levenshtein-distance-in-python/
