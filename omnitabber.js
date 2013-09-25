@@ -1,6 +1,12 @@
 'use strict';
 
+// Populated while user is entering input. Contains the ID of the tab that's the
+// highest-ranked match for the input entered so far by the user. Used to decide
+// on a tab when the user just presses enter without explicitly selecting one of
+// the suggested results.
 var top_match_id;
+
+var active_tabs;
 
 function escape(text) {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -88,39 +94,29 @@ chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
   if (!text)
     return;
 
-  // Run a callback on all open windows. populate: true to include the .tabs
-  // property with each window.
-  chrome.windows.getAll({populate: true}, function(windows) {
-    top_match_id = -1;
-
-    var tabs = windows.reduce(function(arr, win) {
-      return arr.concat(win.tabs);
-    }, []);
-
-    var suggestions = tabs.map(function(tab) {
-      return {
-        tab: tab,
-        title: parseMatches(tab.title, text),
-        url: parseMatches(tab.url, text)
-      };
-    }).filter(function(item) {
-      if (item.title.length > 1 || item.url.length > 1) {
-        if (top_match_id == -1)
-          top_match_id = item.tab.id;
-        return true;
-      } else {
-        return false;
-      }
-    }).map(function(item) {
-      return {
-        content: item.tab.title + ' - ' + item.tab.url + '##' + item.tab.id,
-        description: formatMatches(item.title) + ' - ' +
-                     '<url>' + formatMatches(item.url) + '</url>'
-      };
-    });
-
-    suggest(suggestions);
+  var suggestions = active_tabs.map(function(tab) {
+    return {
+      tab: tab,
+      title: parseMatches(tab.title, text),
+      url: parseMatches(tab.url, text)
+    };
+  }).filter(function(item) {
+    if (item.title.length > 1 || item.url.length > 1) {
+      if (top_match_id == -1)
+        top_match_id = item.tab.id;
+      return true;
+    } else {
+      return false;
+    }
+  }).map(function(item) {
+    return {
+      content: item.tab.title + ' - ' + item.tab.url + '##' + item.tab.id,
+      description: formatMatches(item.title) + ' - ' +
+                   '<url>' + formatMatches(item.url) + '</url>'
+    };
   });
+
+  suggest(suggestions);
 });
 
 // The user has accepted what is typed into the omnibox.
@@ -153,8 +149,19 @@ chrome.omnibox.onInputEntered.addListener(function(text) {
   });
 });
 
+// Stuff to do every time a new Omnitabber session starts
 chrome.omnibox.onInputStarted.addListener(function() {
-  // Reset the top match id every time a new Omnitabber session starts.
+  active_tabs = [];
+  // Collect all tabs in the currently open windows
+  chrome.windows.getAll({populate: true}, function(wins) {
+    wins.forEach(function(win) {
+      win.tabs.forEach(function(tab) {
+        active_tabs.push(tab);
+      });
+    });
+  });
+
+  // Reset the top matching tab id
   top_match_id = -1;
 });
 
