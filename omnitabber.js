@@ -6,7 +6,17 @@
 // the suggested results.
 var top_match_id;
 
+// An array of active chrome.Tab objects at the time the user tries to find
+// a match. It's populated by onInputStarted.
 var active_tabs;
+
+
+// Compute the match score of the given chrome.Tab object for the given search
+// string. The search string may contain a number of whitespace-separated words.
+// Returns the object: {score, url_match_offsets, title_match_offsets}
+function compute_tab_match_score(tab, str) {
+  // TODO: lowercase url and title before matching
+}
 
 function escape(text) {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");

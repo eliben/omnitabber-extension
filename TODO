@@ -1,6 +1,7 @@
+* Feature: add a "back" shortcut that takes you to a tab from which the jump
+  was made.
 * Why is escape needed? Is it doing the right escaping?
 * Unit testing: need a way to mock the chrome interfaces?
-* The newtab logic - do we need it? I think not.
 
 Matching algorithm
 ==================
