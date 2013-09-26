@@ -12,17 +12,64 @@ var active_tabs;
 
 // Compute the match score of the given chrome.Tab object for the given search
 // words (array of strings).
-// Returns the object: {score, url_match_offsets, title_match_offsets}
+// Returns object with properties:
+//    {score, url_match_offsets, title_match_offsets}
 //
 // See README for the scoring algorithm.
 function compute_tab_match_score(tab, searchwords) {
   var title = tab.title.toLowerCase().replace(/\W+/g, '');
   var url = tab.url.toLowerCase().replace(/\W+/g, '');
 
-  var score = 0;
+  var total_score = 0;
+  var url_match_offsets = [];
+  var title_match_offsets = [];
+
   for (var i = 0; i < searchwords.length; i++) {
-    // DO STUFF with word
-  };
+    var word = searchwords[i];
+    var title_result = compute_word_match_score(title, word);
+    if (title_result['score'] > 0) {
+      // Match succeeded in the title. Add up the score (scaling it properly)
+      // and match offset for this word, and move on to the next word.
+      total_score += title_result['score'] * 2;
+      title_match_offsets.push({'index': title_result['match_index'],
+                                'length': word.length});
+    } else {
+      // Match failed in the title. Try in the URL. If we fail here too, then
+      // the whole match fails.
+      var url_result = compute_word_match_score(url, word);
+      if (url_result['score'] > 0) {
+        total_score += url_result['score'];
+        url_match_offsets.push({'index': url_result['match_index'],
+                                'length': word.length});
+      } else {
+        return {'score': 0, 'url_match_offsets': [], 'title_match_offsets': []};
+      }
+    }
+  }
+
+  // If we got this far, all words matched successfully either in the title or
+  // in the URL.
+  return {
+    'score': total_score,
+    'url_match_offsets': url_match_offsets,
+    'title_match_offsets': title_match_offsets};
+}
+
+// Compute the match score and location of word within the given text.
+// Returns object with properties: {score, match_index}.
+// If there's no match, it will be {score=0, match_index=-1}.
+function compute_word_match_score(text, word) {
+  var match_index = text.indexOf(word);
+  if (match_index < 0) {
+    return {'score': 0, 'match_index': -1};
+  } else {
+    var score = word.length * 100 - match_index;
+    if (match_index == 0) {
+      score += 200;
+    }
+
+    return {'score': score, 'match_index': match_index};
+  }
 }
 
 function escape(text) {

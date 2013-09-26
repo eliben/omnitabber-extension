@@ -19,7 +19,9 @@ Scoring algorithm
 * From this, subtract the match's distance from the beginning of the
   string. For example, in "foobar", "ooba" matches with score=399, while "obar"
   matches with score=398.
-* Prefix-matches have a special bonus of 100. So "foob" matches with score=500.
+* Prefix-matches have a special bonus of 200. So "foob" matches with score=500.
+* If a word matches more than once in a title or URL, only the earlier
+  occurrence counts for scoring.
 * The score of title matches is multiplied 2x. URL matches are not multiplied.
 
 
