@@ -158,6 +158,23 @@ chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
   text = text.toLowerCase().replace(/\W+/g, ' ').trim();
   if (!text)
     return;
+  var words = text.split(/\s+/g);
+
+  console.log('active_tabs', active_tabs);
+  var matching_tabs = [];
+  for (var i = 0; i < active_tabs.length; i++) {
+    var tab = active_tabs[i];
+    var result = compute_tab_match_score(tab, words);
+    if (result['score'] > 0) {
+      // TODO: bump score if in the same window as current tab
+      matching_tabs.push({
+        'tab': tab,
+        'score': result['score'],
+        'url_match_offsets': result['url_match_offsets'],
+        'title_match_offsets': result['title_match_offsets']});
+    }
+  }
+  console.log(matching_tabs);
 
   var suggestions = active_tabs.map(function(tab) {
     // Attempt to produce suggestions for all tabs

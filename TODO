@@ -1,3 +1,8 @@
+* BUG: when I enter the first letter into the omnibox, why isn't active_tabs
+  populated yet?
+* NEXT: in onInputStarted, sort maching_tabs and replace the current suggestion
+  mechanism
+
 * Feature: add a "back" shortcut that takes you to a tab from which the jump
   was made.
 * Why is escape needed? Is it doing the right escaping?
